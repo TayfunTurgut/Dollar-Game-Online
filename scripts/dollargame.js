@@ -103,9 +103,9 @@ class dollarGame {
 			for(let a of this.agents) {
 				a.money = floor(randomGaussian(this.money, this.money / 1.5 + 1));
 			}
-			for(let ag of agents) {
+			for(let ag of this.agents) {
 				totalMoney += ag.money;
-				iF(ag.money >= 0) positiveControl++;
+				if(ag.money >= 0) positiveControl++;
 			}
 		}
 	}

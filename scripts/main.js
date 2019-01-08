@@ -1,9 +1,9 @@
-let dollarGame;
+let dG;
 
 function setup() {
-  dollarGame = new dG(4);
+  dG = new dollarGame(4);
 
-  console.log(dollarGame);
+  console.log(dG);
 }
 
 function draw() {

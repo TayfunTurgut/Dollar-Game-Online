@@ -11,8 +11,9 @@ class dG {
 		this.money = this.minMoney;
 		this.agents = [];
 		this.createGameSetup();
-		this.createGameDraw();
 		this.clickCount = 0;
+		this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 16);
+		this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 60);
 	}	
 	
 	createGameSetup() {
@@ -121,8 +122,6 @@ class dG {
 			age.showMoney();
 		}
 		this.transferMoney();
-		this.showMoveCount();
-		this.checkWinCondition();
 	}
 	
 	transferMoney() {
@@ -175,6 +174,11 @@ class dG {
 			text(`You win the game!`, width / 2, height * 1 / 4);
 			text(`You finished in ${this.clickCount} moves!`, width / 2, height * 2 / 4);
 		}
+	}
+	
+	createGameSystemDraw() {
+		this.showMoveCount();
+		this.checkWinCondition();
 	}
 }
 

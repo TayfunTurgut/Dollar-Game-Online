@@ -1,4 +1,4 @@
-class dG {
+class dollarGame {
 	constructor(agentCount) {
 		this.agentCount = agentCount;
 		this.minConnection = this.agentCount - 1;

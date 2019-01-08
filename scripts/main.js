@@ -1,7 +1,7 @@
 let dG;
 
 function setup() {
-  dG = new dollarGame(6);
+  dG = new dollarGame(5);
 }
 
 function draw() {

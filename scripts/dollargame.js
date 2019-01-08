@@ -65,7 +65,7 @@ class dG {
 						for(let i = 0; i < randAgent.connectedTo.length; i++) {
 							if(randAgent.connectedTo[i] == randomConnected) randAgent.connectedTo.splice(i, 1);
 						}
-						for(let j = 0; j < randomConnected.connectedTo.length, j++) {
+						for(let j = 0; j < randomConnected.connectedTo.length; j++) {
 							if(randomConnected.connectedTo[j] == randAgent) randomConnected.connectedTo.splice(j, 1);
 						}
 						connectionCounter = this.connectionCount - 2;

@@ -87,7 +87,7 @@ class dG {
 			targetAgent = random(targetAgent.connectedTo);
 		}
 		for(let a of this.agents) {
-			iF(!a.isChecked) {
+			if(!a.isChecked) {
 				this.generateAgentConnections();
 				break;
 			}

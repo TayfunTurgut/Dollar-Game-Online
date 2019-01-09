@@ -40,11 +40,11 @@ class dollarGame {
       let xPos = leftBoundary + (rowSize * (2 * j + 1) / 2);
       let yPos = topBoundary + (columnSize * (2 * yVar + 1) / 2);
       this.agentPosArray.push(createVector(xPos, yPos));
-
     }
     while (this.agents.length < this.agentCount) {
       let tempAgent = new Agent();
       tempAgent.pos = this.agentPosArray.splice(floor(random(0, this.agentPosArray.length)), 1)[0];
+      tempAgent.index = this.agents.length;
       this.agents.push(tempAgent);
     }
     this.generateAgentConnections();
@@ -143,8 +143,8 @@ class dollarGame {
         richestAgent = a;
       }
     }
-    stroke(120);
-    strokeWeight(3);
+    stroke(150, 150, 150, 200);
+    strokeWeight(2);
     fill(richestAgent.color);
     textSize(64);
     text(this.clickCount, 55, height - 50);
@@ -172,11 +172,11 @@ class dollarGame {
 
   createGameDraw() {
     background(0);
-    for (let ag of this.agents) {
-      ag.drawLine();
-    }
     for (let a of this.agents) {
-      a.render();
+      a.drawLine();
+    }
+    for (let ag of this.agents) {
+      ag.render();
     }
     for (let age of this.agents) {
       age.showMoney();
@@ -184,6 +184,21 @@ class dollarGame {
     this.showMoveCount();
     this.checkWinCondition();
   }
+  
+  encodeAgents() {
+    let encodedAgents = "";
+    encodedAgents += `${this.agents.length}:`;
+    for(let a of this.agents) {
+      encodedAgents += `${a.index}:`;
+      encodedAgents += `${a.money}:`;
+      encodedAgents += `${a.connectedTo.length}:`;
+      for(let c of a.connectedTo){
+        encodedAgents += `c.index:`;
+      }
+    }
+    encodedAgents = encodedAgents.substr(0, encodedAgents.length-1);
+  }
+  console.log(encodedAgents);
 }
 
 class Agent {
@@ -195,12 +210,12 @@ class Agent {
     this.connectedTo = [];
     this.isChecked = false;
     this.isClicked = false;
+    this.index = 0;
   }
 
   render() {
-    noStroke(150, 150, 150, 150);
-    strokeWeight(1);
-    fill(this.color);
+    noStroke();
+    fill(this.color.levels[0], this.color.levels[1], this.color.levels[2], 100);
     ellipseMode(CENTER);
     ellipse(this.pos.x, this.pos.y, this.radius * 2);
   }

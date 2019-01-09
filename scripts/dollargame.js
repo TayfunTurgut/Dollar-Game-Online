@@ -6,15 +6,14 @@ class dollarGame {
     for (let i = 1; i < this.agentCount; i++) {
       this.maxConnection += this.agentCount - i;
     }
-    if (this.maxConnection < this.minConnection + 2) {
-      this.connectionCount = floor(random(this.minConnection, this.maxConnection));
-    } else {
-      this.connectionCount = floor(random(this.minConnection, this.minConnection + 2));
-    }
+    this.connectionCount = floor(random(this.minConnection,
+      min(this.maxConnection, this.minConnection + 2)));
     this.minMoney = this.connectionCount - this.agentCount + 1;
     this.money = this.minMoney;
     this.agents = [];
     this.agentPosArray = [];
+    this.input = createInput();
+    this.button = createButton('Load Game!');
     this.createGameSetup();
     this.clickCount = 0;
     this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
@@ -23,10 +22,14 @@ class dollarGame {
 
   createGameSetup() {
     createCanvas(800, 600);
-    this.generateAgents();
+    this.input.position(width * 1 / 3, height - 30);
+    this.button.position(this.input.x + this.input.width, height - 30);
+    this.button.mousePressed(() => this.decodeAgents());
+    this.generateAgentPositions();
+    this.encodeAgents();
   }
 
-  generateAgents() {
+  generateAgentPositions() {
     let leftBoundary = width * 5 / 100;
     let topBoundary = height * 5 / 100;
     let rowSize = (width - 2 * leftBoundary) / this.agentCount;
@@ -47,6 +50,24 @@ class dollarGame {
       tempAgent.index = this.agents.length;
       this.agents.push(tempAgent);
     }
+    this.propagate1();
+  }
+
+  propagate1() {
+    let positionVectors = [];
+    for (let a of this.agents) {
+      positionVectors.push(a.pos);
+    }
+    let slopeArr = [];
+    for (let k = 0; k < positionVectors.length - 1; k++) {
+      for (let l = k + 1; l < positionVectors.length; l++) {
+        slopeArr.push((positionVectors[k].y - positionVectors[l].y) / (positionVectors[k].x - positionVectors[l].x));
+      }
+    }
+    if ((new Set(slopeArr)).size != slopeArr.length) {
+      this.agents = [];
+      this.generateAgentPositions();
+    }
     this.generateAgentConnections();
   }
 
@@ -64,10 +85,10 @@ class dollarGame {
       this.agents[selectedPair.y].connectedTo.push(this.agents[selectedPair.x]);
       connectionCounter++;
     }
-    this.propagate();
+    this.propagate2();
   }
 
-  propagate() {
+  propagate2() {
     for (let a of this.agents) {
       if (a.connectedTo.length == 0) {
         for (let ag of this.agents) {
@@ -184,24 +205,53 @@ class dollarGame {
     this.showMoveCount();
     this.checkWinCondition();
   }
-  
+
   encodeAgents() {
     let encodedAgents = "";
     encodedAgents += `${this.agents.length}:`;
-    for(let a of this.agents) {
+    for (let a of this.agents) {
       encodedAgents += `${a.index}:`;
       encodedAgents += `${a.money}:`;
       encodedAgents += `${a.connectedTo.length}:`;
-      for(let c of a.connectedTo){
+      for (let c of a.connectedTo) {
         encodedAgents += `${c.index}:`;
       }
     }
-    encodedAgents = encodedAgents.substr(0, encodedAgents.length-1);
-    return encodedAgents;
+    encodedAgents = encodedAgents.substr(0, encodedAgents.length - 1);
+    this.input.value(encodedAgents);
   }
-  
-  decodeAgents(encAgents) {
-    
+
+  decodeAgents() {
+    let encodedAgents = this.input.value()
+    let agentArray = split(encodedAgents, ":");
+    this.input.value("");
+    for (let a of agentArray) {
+      a = parseInt(a, 10);
+    }
+    this.agentCount = agentArray[0];
+    this.agents = [];
+    this.generateAgentPositions();
+    clearInterval(this.drawInterval);
+    clearInterval(this.systemInterval);
+    for (let ag of this.agents) {
+      ag.connectedTo = [];
+    }
+    let pointer = 1;
+    for (let i = 0; i < this.agents.length; i++) {
+      this.agents[i].index = agentArray[pointer];
+      pointer++;
+      this.agents[i].money = agentArray[pointer];
+      pointer++;
+      let connectionCount = agentArray[pointer]
+      for (let j = 0; j < connectionCount; j++) {
+        pointer++;
+        this.agents[i].connectedTo.push(this.agents[agentArray[pointer]]);
+      }
+      pointer++;
+    }
+    this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
+    this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
+    this.encodeAgents();
   }
 }
 

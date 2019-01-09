@@ -193,11 +193,10 @@ class dollarGame {
       encodedAgents += `${a.money}:`;
       encodedAgents += `${a.connectedTo.length}:`;
       for(let c of a.connectedTo){
-        encodedAgents += `c.index:`;
+        encodedAgents += `${c.index}:`;
       }
     }
     encodedAgents = encodedAgents.substr(0, encodedAgents.length-1);
-    console.log(encodedAgents);
   }
 }
 

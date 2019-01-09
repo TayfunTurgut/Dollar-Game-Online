@@ -11,7 +11,6 @@ class dollarGame {
     this.minMoney = this.connectionCount - this.agentCount + 1;
     this.money = this.minMoney;
     this.agents = [];
-    this.agentPosArray = [];
     this.input = createInput();
     this.button = createButton('Load Game!');
     this.createGameSetup();
@@ -30,6 +29,7 @@ class dollarGame {
   }
 
   generateAgentPositions() {
+    let agentPosArray = [];
     let leftBoundary = width * 5 / 100;
     let topBoundary = height * 5 / 100;
     let rowSize = (width - 2 * leftBoundary) / this.agentCount;
@@ -42,11 +42,11 @@ class dollarGame {
       let yVar = yVarArr.splice(floor(random(0, yVarArr.length)), 1)[0];
       let xPos = leftBoundary + (rowSize * (2 * j + 1) / 2);
       let yPos = topBoundary + (columnSize * (2 * yVar + 1) / 2);
-      this.agentPosArray.push(createVector(xPos, yPos));
+      agentPosArray.push(createVector(xPos, yPos));
     }
     while (this.agents.length < this.agentCount) {
       let tempAgent = new Agent();
-      tempAgent.pos = this.agentPosArray.splice(floor(random(0, this.agentPosArray.length)), 1)[0];
+      tempAgent.pos = agentPosArray.splice(floor(random(0, agentPosArray.length)), 1)[0];
       tempAgent.index = this.agents.length;
       this.agents.push(tempAgent);
     }
@@ -61,7 +61,8 @@ class dollarGame {
     let slopeArr = [];
     for (let k = 0; k < positionVectors.length - 1; k++) {
       for (let l = k + 1; l < positionVectors.length; l++) {
-        slopeArr.push((positionVectors[k].y - positionVectors[l].y) / (positionVectors[k].x - positionVectors[l].x));
+        slopeArr.push((positionVectors[k].y - positionVectors[l].y) /
+          (positionVectors[k].x - positionVectors[l].x));
       }
     }
     if ((new Set(slopeArr)).size != slopeArr.length) {
@@ -72,6 +73,10 @@ class dollarGame {
   }
 
   generateAgentConnections() {
+    for (let a of this.agents) {
+      a.connectedTo = [];
+      a.isChecked = false;
+    }
     let agentPairs = [];
     for (let i = 0; i < this.agents.length - 1; i++) {
       for (let j = i + 1; j < this.agents.length; j++) {
@@ -89,14 +94,13 @@ class dollarGame {
   }
 
   propagate2() {
+    let isError = false;
     for (let a of this.agents) {
       if (a.connectedTo.length == 0) {
-        for (let ag of this.agents) {
-          ag.connectedTo = [];
-        }
-        this.generateAgentConnections();
+        isError = true;
       }
     }
+    if (isError) this.generateAgentConnections();
     let targetAgent = random(this.agents);
     targetAgent.isChecked = true;
     for (let i = 0; i < this.maxConnection * 2; i++) {
@@ -105,15 +109,12 @@ class dollarGame {
       }
       targetAgent = random(targetAgent.connectedTo);
     }
-    for (let age of this.agents) {
-      if (!age.isChecked) {
-        for (let agen of this.agents) {
-          agen.connectedTo = [];
-        }
-        this.generateAgentConnections();
-        break;
+    for (let ag of this.agents) {
+      if (!ag.isChecked) {
+        isError = true;
       }
     }
+    if (isError) this.generateAgentConnections();
     this.distributeMoney();
   }
 
@@ -260,7 +261,7 @@ class Agent {
     this.radius = 35;
     this.pos = createVector();
     this.money = 0;
-    this.color = color(random(100, 255), random(100, 255), random(100, 255), 150);
+    this.color = color(random(150, 255), random(150, 255), random(150, 255), 150);
     this.connectedTo = [];
     this.isChecked = false;
     this.isClicked = false;

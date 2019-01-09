@@ -197,16 +197,20 @@ class dollarGame {
       }
     }
     encodedAgents = encodedAgents.substr(0, encodedAgents.length-1);
-    console.log(encodedAgents);
+    return encodedAgents;
+  }
+  
+  decodeAgents(encAgents) {
+    
   }
 }
 
 class Agent {
   constructor() {
-    this.radius = 30;
+    this.radius = 35;
     this.pos = createVector();
     this.money = 0;
-    this.color = color(random(100, 255), random(100, 255), random(100, 255));
+    this.color = color(random(100, 255), random(100, 255), random(100, 255), 150);
     this.connectedTo = [];
     this.isChecked = false;
     this.isClicked = false;
@@ -215,7 +219,7 @@ class Agent {
 
   render() {
     noStroke();
-    fill(this.color.levels[0], this.color.levels[1], this.color.levels[2], 100);
+    fill(this.color);
     ellipseMode(CENTER);
     ellipse(this.pos.x, this.pos.y, this.radius * 2);
   }

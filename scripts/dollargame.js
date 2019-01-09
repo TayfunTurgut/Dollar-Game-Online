@@ -197,6 +197,7 @@ class dollarGame {
       }
     }
     encodedAgents = encodedAgents.substr(0, encodedAgents.length-1);
+    console.log(encodedAgents);
   }
 }
 

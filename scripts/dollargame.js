@@ -20,7 +20,7 @@ class dollarGame {
   }
 
   createGameSetup() {
-    createCanvas(800, 600);
+    createCanvas(640, 640);
     this.input.position(width * 1 / 3, height - 30);
     this.button.position(this.input.x + this.input.width, height - 30);
     this.button.mousePressed(() => this.decodeAgents());

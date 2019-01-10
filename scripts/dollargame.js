@@ -12,20 +12,33 @@ class dollarGame {
     this.money = this.minMoney;
     this.agents = [];
     this.input = createInput();
-    this.button = createButton('Load Game!');
+    this.button1 = createButton('Load Game!');
+    this.button2 = createButton('Copy to clipboard!')
+    this.button3 = createButton('Paste from clipboard!')
     this.createGameSetup();
     this.moveCount = 0;
+    this.cooldown = 0;
+    this.timer = 0;
     this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
     this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
   }
 
   createGameSetup() {
-    createCanvas(640, 640);
-    this.input.position(width * 1 / 3, height - 30);
-    this.button.position(this.input.x + this.input.width, height - 30);
-    this.button.mousePressed(() => this.decodeAgents());
+    createCanvas(640, 600);
+    this.input.position(width * 1.75 / 5, height - 30);
+    this.button1.position(this.input.x + this.input.width * 1.4, height - 30);
+    this.button1.mousePressed(() => this.decodeAgents());
+    this.button2.position(this.input.x - this.input.width / 1.38, height - 30);
+    this.button2.mousePressed(() => navigator.clipboard.writeText(this.input.value()));
+    this.button3.position(this.input.x + this.input.width * 0.565, height - 30);
+    this.button3.mousePressed(() => this.readClipboardData());
     this.generateAgentPositions();
     this.encodeAgents();
+  }
+
+  readClipboardData() {
+    navigator.clipboard.readText().then(
+      clipboard => this.input.value(clipboard));
   }
 
   generateAgentPositions() {
@@ -139,11 +152,12 @@ class dollarGame {
   }
 
   transferMoney() {
+    if (this.cooldown > 0) this.cooldown -= 12;
     for (let a of this.agents) {
       a.isClicked = false;
     }
     let clickedAgent;
-    if (mouseIsPressed) {
+    if (mouseIsPressed && this.cooldown <= 0) {
       for (let ag of this.agents) {
         if (dist(ag.pos.x, ag.pos.y, mouseX, mouseY) <= ag.radius) {
           ag.money -= ag.connectedTo.length;
@@ -152,24 +166,29 @@ class dollarGame {
           }
           clickedAgent = ag;
           this.moveCount++;
+          this.cooldown = 1000 / 16 + 0.5;
         }
       }
     }
     if (clickedAgent) clickedAgent.isClicked = true;
   }
 
-  showMoveCount() {
-    let richestAgent = random(this.agents);
-    for (let a of this.agents) {
-      if (a.money > richestAgent.money) {
-        richestAgent = a;
-      }
+  showInformation() {
+    noStroke();
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(50);
+    text(this.moveCount, width * 5 / 100, height * 95 / 100);
+    if (this.cooldown > 0) {
+      fill(255, 0, 0, 150);
+    } else {
+      fill(0, 255, 0, 150);
     }
-    stroke(150, 150, 150, 200);
-    strokeWeight(2);
-    fill(richestAgent.color);
-    textSize(64);
-    text(this.moveCount, 55, height - 50);
+    ellipse(width * 95 / 100, height * 95 / 100, this.agents[0].radius);
+    this.timer += 1000 / 60;
+    fill(255);
+    textSize(32);
+    text((this.timer / 1000).toFixed(2), width * 7.5 / 100, height * 5 / 100);
   }
 
   checkWinCondition() {
@@ -185,10 +204,15 @@ class dollarGame {
       rectMode(CENTER);
       rect(width / 2, height / 2, width, height);
       noStroke();
-      fill(random(100, 255), random(100, 255), random(100, 255));
+      fill(random(120, 255), random(120, 255), random(120, 255));
       textSize(40);
-      text(`You win the game!`, width / 2, height * 1 / 4);
+      text(`You win the game!`, width / 2, height * 1.5 / 4);
       text(`You finished in ${this.moveCount} moves!`, width / 2, height * 2 / 4);
+      text(`You finished in ${(this.timer/1000).toFixed(2)} seconds!`, width / 2, height * 2.35 / 4);
+      textSize(25);
+      text(`The game will restart in 10 seconds
+      with the same seed!`, width / 2, height * 2.80 / 4);
+      let restartGame = setTimeout(() => this.decodeAgents(), 1000 * 10);
     }
   }
 
@@ -203,7 +227,7 @@ class dollarGame {
     for (let age of this.agents) {
       age.showMoney();
     }
-    this.showMoveCount();
+    this.showInformation();
     this.checkWinCondition();
   }
 
@@ -251,6 +275,8 @@ class dollarGame {
       pointer++;
     }
     this.moveCount = 0;
+    this.cooldown = 0;
+    this.timer = 0;
     this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
     this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
     this.encodeAgents();

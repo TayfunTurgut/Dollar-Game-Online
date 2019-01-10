@@ -13,7 +13,7 @@ We love you, Numberphile!
 
 # Background
 
-I have been working on this project in my free time and it has evolved quite a bit (you can see that in the commit history of the repo). The dream is to complete all #TO-DOs of the project and finally release it as v1.0.0.0.0. That will be one project out of the mind, right?
+I have been working on this project in my free time and it has evolved quite a bit (you can see that in the commit history of the repo). The dream is to complete all #TO-DOs of the project and finally release it as v1.0.0.0.0. That will be one project out of my mind, right?
 
 # Goal of the game
 

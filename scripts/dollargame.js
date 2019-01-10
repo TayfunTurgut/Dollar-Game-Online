@@ -14,7 +14,7 @@ class dollarGame {
     this.input = createInput();
     this.button = createButton('Load Game!');
     this.createGameSetup();
-    this.clickCount = 0;
+    this.moveCount = 0;
     this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
     this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
   }
@@ -151,7 +151,7 @@ class dollarGame {
             c.money++;
           }
           clickedAgent = ag;
-          this.clickCount++;
+          this.moveCount++;
         }
       }
     }
@@ -169,7 +169,7 @@ class dollarGame {
     strokeWeight(2);
     fill(richestAgent.color);
     textSize(64);
-    text(this.clickCount, 55, height - 50);
+    text(this.moveCount, 55, height - 50);
   }
 
   checkWinCondition() {
@@ -188,7 +188,7 @@ class dollarGame {
       fill(random(100, 255), random(100, 255), random(100, 255));
       textSize(40);
       text(`You win the game!`, width / 2, height * 1 / 4);
-      text(`You finished in ${this.clickCount} moves!`, width / 2, height * 2 / 4);
+      text(`You finished in ${this.moveCount} moves!`, width / 2, height * 2 / 4);
     }
   }
 
@@ -250,6 +250,7 @@ class dollarGame {
       }
       pointer++;
     }
+    this.moveCount = 0;
     this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
     this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
     this.encodeAgents();

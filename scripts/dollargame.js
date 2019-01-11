@@ -6,8 +6,8 @@ class dollarGame {
     for (let i = 1; i < this.agentCount; i++) {
       this.maxConnection += this.agentCount - i;
     }
-    this.connectionCount = floor(random(this.minConnection,
-      min(this.maxConnection, this.minConnection + 2)));
+    this.connectionCount = floor(random(min(this.maxConnection, this.minConnection + 1),
+      min(this.maxConnection, this.minConnection + 3)));
     this.minMoney = this.connectionCount - this.agentCount + 1;
     this.money = this.minMoney;
     this.agents = [];
@@ -19,7 +19,7 @@ class dollarGame {
     this.moveCount = 0;
     this.cooldown = 0;
     this.timer = 0;
-    this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
+    this.systemInterval = setInterval(() => this.transferMoney(), 1000 / 16);
     this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
   }
 
@@ -81,8 +81,7 @@ class dollarGame {
     if ((new Set(slopeArr)).size != slopeArr.length) {
       this.agents = [];
       this.generateAgentPositions();
-    }
-    this.generateAgentConnections();
+    } else this.generateAgentConnections();
   }
 
   generateAgentConnections() {
@@ -114,6 +113,7 @@ class dollarGame {
       }
     }
     if (isError) this.generateAgentConnections();
+    else {
     let targetAgent = random(this.agents);
     targetAgent.isChecked = true;
     for (let i = 0; i < this.maxConnection * 2; i++) {
@@ -128,7 +128,8 @@ class dollarGame {
       }
     }
     if (isError) this.generateAgentConnections();
-    this.distributeMoney();
+    else this.distributeMoney();
+    }
   }
 
   distributeMoney() {
@@ -138,17 +139,13 @@ class dollarGame {
       totalMoney = 0;
       positiveControl = 0;
       for (let a of this.agents) {
-        a.money = floor(randomGaussian(this.money, this.money / 1.5 + 1));
+        a.money = floor(randomGaussian(this.money, this.money / 1.5 + 2));
       }
       for (let ag of this.agents) {
         totalMoney += ag.money;
         if (ag.money >= 0) positiveControl++;
       }
     }
-  }
-
-  createGameSystemDraw() {
-    this.transferMoney();
   }
 
   transferMoney() {
@@ -171,6 +168,21 @@ class dollarGame {
       }
     }
     if (clickedAgent) clickedAgent.isClicked = true;
+  }
+  
+  createGameDraw() {
+    background(0);
+    for (let a of this.agents) {
+      a.drawLine();
+    }
+    for (let ag of this.agents) {
+      ag.render();
+    }
+    for (let age of this.agents) {
+      age.showMoney();
+    }
+    this.showInformation();
+    this.checkWinCondition();
   }
 
   showInformation() {
@@ -210,25 +222,13 @@ class dollarGame {
       text(`You finished in ${this.moveCount} moves!`, width / 2, height * 2 / 4);
       text(`You finished in ${(this.timer/1000).toFixed(2)} seconds!`, width / 2, height * 2.35 / 4);
       textSize(25);
-      text(`The game will restart in 10 seconds
-      with the same seed!`, width / 2, height * 2.80 / 4);
-      let restartGame = setTimeout(() => this.decodeAgents(), 1000 * 10);
+      text(`The game will restart in 8 seconds!`, width / 2, height * 2.80 / 4);
+      let restart = setTimeout(() => this.restartGame(), 1000 * 8);
     }
   }
-
-  createGameDraw() {
-    background(0);
-    for (let a of this.agents) {
-      a.drawLine();
-    }
-    for (let ag of this.agents) {
-      ag.render();
-    }
-    for (let age of this.agents) {
-      age.showMoney();
-    }
-    this.showInformation();
-    this.checkWinCondition();
+  
+  restartGame() {
+    dG = new dollarGame(floor(random(3,6)));
   }
 
   encodeAgents() {
@@ -277,7 +277,7 @@ class dollarGame {
     this.moveCount = 0;
     this.cooldown = 0;
     this.timer = 0;
-    this.systemInterval = setInterval(() => this.createGameSystemDraw(), 1000 / 16);
+    this.systemInterval = setInterval(() => this.transferMoney(), 1000 / 16);
     this.drawInterval = setInterval(() => this.createGameDraw(), 1000 / 60);
     this.encodeAgents();
   }

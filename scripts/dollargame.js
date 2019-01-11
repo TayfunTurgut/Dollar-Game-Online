@@ -211,6 +211,7 @@ class dollarGame {
     if (positiveTotal == this.agents.length) {
       clearInterval(this.drawInterval);
       clearInterval(this.systemInterval);
+      this.button1.mousePressed(() => console.log("Game restarting..");
       noStroke();
       fill(0);
       rectMode(CENTER);
@@ -228,8 +229,6 @@ class dollarGame {
   }
   
   restartGame() {
-    clearInterval(this.drawInterval);
-    clearInterval(this.systemInterval);
     dG = new dollarGame(floor(random(3,6)));
   }
 

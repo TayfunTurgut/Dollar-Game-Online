@@ -114,21 +114,21 @@ class dollarGame {
     }
     if (isError) this.generateAgentConnections();
     else {
-    let targetAgent = random(this.agents);
-    targetAgent.isChecked = true;
-    for (let i = 0; i < this.maxConnection * 2; i++) {
-      for (let t of targetAgent.connectedTo) {
-        t.isChecked = true;
+      let targetAgent = random(this.agents);
+      targetAgent.isChecked = true;
+      for (let i = 0; i < this.maxConnection * 2; i++) {
+        for (let t of targetAgent.connectedTo) {
+          t.isChecked = true;
+        }
+        targetAgent = random(targetAgent.connectedTo);
       }
-      targetAgent = random(targetAgent.connectedTo);
-    }
-    for (let ag of this.agents) {
-      if (!ag.isChecked) {
-        isError = true;
+      for (let ag of this.agents) {
+        if (!ag.isChecked) {
+          isError = true;
+        }
       }
-    }
-    if (isError) this.generateAgentConnections();
-    else this.distributeMoney();
+      if (isError) this.generateAgentConnections();
+      else this.distributeMoney();
     }
   }
 
@@ -228,6 +228,8 @@ class dollarGame {
   }
   
   restartGame() {
+    clearInterval(this.drawInterval);
+    clearInterval(this.systemInterval);
     dG = new dollarGame(floor(random(3,6)));
   }
 
